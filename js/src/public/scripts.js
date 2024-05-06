@@ -1,14 +1,14 @@
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
-    
+
     const profileContainer = document.getElementById('profile-container');
     profileContainer.innerHTML = ''; // Clear previous content
 
     // Create profile card
     const profileCard = document.createElement('div');
     profileCard.classList.add('profile-card');
-    
+
 
     let currentIndex = 0;
     let images = [];
@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const likeButton = document.createElement('button');
     likeButton.textContent = 'Like';
     likeButton.addEventListener('click', () => {
-        console.log(`Liked house with ID ${house.id}`);
+        // console.log(`Liked house with ID ${house.id}`);
+        handleVote(1, 'like');
         // Add your logic for handling a like action here
     });
     actionsContainer.appendChild(likeButton);
@@ -35,25 +36,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const dislikeButton = document.createElement('button');
     dislikeButton.textContent = 'Dislike';
     dislikeButton.addEventListener('click', () => {
-        console.log(`Disliked house with ID ${house.id}`);
+        // console.log(`Disliked house with ID ${house.id}`);
+        handleVote(1, 'dislike');
         // Add your logic for handling a dislike action here
     });
     actionsContainer.appendChild(dislikeButton);
 
     const nextImageButton = document.createElement('button');
     nextImageButton.textContent = 'Next';
-    nextImageButton.addEventListener('click', () => {
-        console.log(`Next image`);
-        // Add your logic for handling a like action here
-    });
+    nextImageButton.addEventListener('click', nextImage);
     actionsContainer.appendChild(nextImageButton);
 
     const previousImageButton = document.createElement('button');
     previousImageButton.textContent = 'Previous';
-    previousImageButton.addEventListener('click', () => {
-        console.log(`Previous image`);
-        // Add your logic for handling a dislike action here
-    });
+    previousImageButton.addEventListener('click', prevImage);
     actionsContainer.appendChild(previousImageButton);
 
     profileCard.appendChild(actionsContainer);
@@ -65,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateImage() {
         if (images.length !== 0) {
             currentImage.src = images[currentIndex];
-            profileCard.replaceChild(currentImage, currentImage);    
+            profileCard.replaceChild(currentImage, currentImage);
         }
     }
 
@@ -81,58 +77,46 @@ document.addEventListener('DOMContentLoaded', function() {
         updateImage();
     }
 
-    // Event listener for previous button click
-    previousImageButton.addEventListener('click', prevImage);
-
-    // Event listener for next button click
-    nextImageButton.addEventListener('click', nextImage);
-
     // Fetch images from the server-side
     fetchData(updateImage);
 
     function fetchData(updateImage) {
-    fetch('http://127.0.0.1:5000/houses')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch house images');
-            }
-            return response.json();
-        })
-        .then(data => {
-            images = data.image;
-            updateImage(); // Display the first image
-        })
-        .catch(error => {
-            console.error('Error fetching house images:', error);
-        });
-}
+        fetch('http://127.0.0.1:5000/houses')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch house images');
+                }
+                return response.json();
+            })
+            .then(data => {
+                images = data.image;
+                updateImage(); // Display the first image
+            })
+            .catch(error => {
+                console.error('Error fetching house images:', error);
+            });
+    }
 
+    function handleVote(houseId, voteType) {
+        fetch('http://127.0.0.1:5000/vote', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ house_id: houseId, vote_type: voteType })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    console.log(response);
+                    throw new Error('Failed to record vote');
+                }
+                console.log(`Successfully recorded ${voteType} for house ${houseId}`);
+                // Once the vote is recorded successfully, fetch data for the next house
+                fetchData(updateImage);
+            })
+            .catch(error => {
+                console.error('Error recording vote:', error);
+            });
+    }
 });
-
-
-
-function handleVote(houseId, voteType) {
-    fetch('http://127.0.0.1:5000/vote', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ house_id: houseId, vote_type: voteType })
-    })
-        .then(response => {
-            if (!response.ok) {
-                console.log(response);
-                throw new Error('Failed to record vote');
-            }
-            console.log(`Successfully recorded ${voteType} for house ${houseId}`);
-        })
-        .catch(error => {
-            console.error('Error recording vote:', error);
-        });
-}
-
-
-// Render initial profiles
-// fetchHouseData();
-
 
