@@ -7,7 +7,7 @@ CORS(app)  # Enable CORS for all routes
 
 # Sample house data (replace with your actual data)
 house_data = [
-    {"id": 1, "image": ["houses/house1.jpg", "houses/house1.jpg"], "likes": 0, "dislikes": 0},
+    {"id": 1, "image": ["houses/house1.jpg", "houses/house2.jpg", "houses/house3.jpg"], "likes": 0, "dislikes": 0},
     {"id": 2, "image": ["houses/house2.jpg", "houses/house2.jpg"], "likes": 0, "dislikes": 0},
     {"id": 3, "image": ["houses/house3.jpg", "houses/house3.jpg"], "likes": 0, "dislikes": 0}
     # Add more house objects as needed
@@ -16,7 +16,7 @@ house_data = [
 # Route to get house data
 @app.route('/houses', methods=['GET'])
 def get_houses():
-    return jsonify(house_data)
+    return jsonify(house_data[0])
 
 # Route to handle like and dislike signals
 @app.route('/vote', methods=['POST'])
