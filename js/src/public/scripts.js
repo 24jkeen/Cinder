@@ -12,14 +12,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let currentIndex = 0;
     let images = [];
-
-
+    let houseId = 0;
 
     // Add house image
     const currentImage = document.createElement('img');
     currentImage.src = currentImage.src;
     profileCard.appendChild(currentImage);
 
+    // Add house ID as title
+    const title = document.createElement('h3');
+    title.textContent = `House ID: ${houseId}`;
+    profileCard.appendChild(title);
+        
     // Add like and dislike buttons
     const actionsContainer = document.createElement('div');
     actionsContainer.classList.add('profile-actions');
@@ -28,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
     likeButton.textContent = 'Like';
     likeButton.addEventListener('click', () => {
         // console.log(`Liked house with ID ${house.id}`);
-        handleVote(1, 'like');
+        handleVote(houseId, 'like');
         // Add your logic for handling a like action here
     });
     actionsContainer.appendChild(likeButton);
@@ -37,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
     dislikeButton.textContent = 'Dislike';
     dislikeButton.addEventListener('click', () => {
         // console.log(`Disliked house with ID ${house.id}`);
-        handleVote(1, 'dislike');
+        handleVote(houseId, 'dislike');
         // Add your logic for handling a dislike action here
     });
     actionsContainer.appendChild(dislikeButton);
@@ -62,6 +66,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (images.length !== 0) {
             currentImage.src = images[currentIndex];
             profileCard.replaceChild(currentImage, currentImage);
+            title.textContent = `House ID: ${houseId}`
+            profileCard.replaceChild(title, title);
         }
     }
 
@@ -90,6 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(data => {
                 images = data.image;
+                houseId = data.id;
                 updateImage(); // Display the first image
             })
             .catch(error => {

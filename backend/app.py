@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
+currentId = 0
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -16,7 +17,9 @@ house_data = [
 # Route to get house data
 @app.route('/houses', methods=['GET'])
 def get_houses():
-    return jsonify(house_data[0])
+    global currentId
+    currentId+=1
+    return jsonify(house_data[currentId % len(house_data)])
 
 # Route to handle like and dislike signals
 @app.route('/vote', methods=['POST'])
