@@ -1,3 +1,5 @@
 node_modules/
 venv/
 .vscode/settings.json
+.env*
+backend/__pycache__/*
